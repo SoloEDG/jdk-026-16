@@ -1,7 +1,13 @@
 import { useEffect, useReducer, useState, useRef } from "react";
 import { findPuzzle, puzzles } from "../features/catalog";
-import { inspect, nextHint } from "../features/assist";
+import {
+  HINT_LIMIT,
+  deriveLine,
+  derivePlan,
+  inspect,
+} from "../features/assist";
 import { loadDocument, saveDocument } from "../features/journal";
+import type { Mark } from "../shared/types";
 import { transition } from "./reducer";
 export function useGame() {
   const [initial] = useState(() => loadDocument(puzzles));
@@ -39,14 +45,53 @@ export function useGame() {
     allowSave.current = true;
     setSaveState(saveDocument(document) ? "进度已保存" : "保存失败 · 点击重试");
   };
-  const hint = () => {
-    const hint = nextHint(puzzle, session);
-    if (hint) {
-      dispatch({ type: "hint", ...hint });
+  const guideOpen = () => {
+    if (session.solved || session.guide) return;
+    if (session.hints >= HINT_LIMIT) {
+      setMessage("本题提示额度已用完，试试检查当前标记。");
+      return;
+    }
+    if (!derivePlan(puzzle, session.marks).lines.length) {
       setMessage(
-        `已揭示第 ${Math.floor(hint.index / puzzle.size) + 1} 行、第 ${(hint.index % puzzle.size) + 1} 列的一格。`,
+        "当前盘面没有必然结论：没有哪一行或列能确定新的格子。继续标记几格，或先检查已有标记。",
       );
-    } else setMessage("本题提示额度已用完，试试检查当前标记。");
+      return;
+    }
+    dispatch({ type: "guide.open" });
+    setMessage("第 1 步：这些行列现在能推出确定的格子。");
+  };
+  const guideAdvance = () => {
+    const guide = session.guide;
+    if (!guide || session.solved) return;
+    if (guide.level === 1) {
+      if (session.hints >= HINT_LIMIT) {
+        setMessage("本题提示额度已用完，无法进入下一层。");
+        return;
+      }
+      if (!derivePlan(puzzle, session.marks).lines.length) {
+        setMessage("当前盘面没有必然结论，暂时没有可讲的理由。");
+        return;
+      }
+      dispatch({ type: "guide.advance" });
+      setMessage("第 2 步：理由只来自线索和当前标记。");
+    } else if (guide.level === 2) {
+      dispatch({ type: "guide.advance" });
+      setMessage("第 3 步：确认后才会落格。");
+    }
+  };
+  const guideLine = (line: number) => dispatch({ type: "guide.line", line });
+  const guideApply = (index: number, mark: Mark) => {
+    const guide = session.guide;
+    if (!guide || session.solved) return;
+    const proven = deriveLine(puzzle, session.marks, guide.line).certain.some(
+      (c) => c.index === index && c.mark === mark,
+    );
+    dispatch({ type: "guide.apply", index, mark });
+    setMessage(
+      proven
+        ? "已按你的确认落下一格，行列状态与进度已同步更新。"
+        : "盘面已有变化，刚才的结论不再成立：未落格，也未消耗额度。",
+    );
   };
   const check = () => {
     const { errors } = inspect(puzzle, session);
@@ -65,7 +110,10 @@ export function useGame() {
     saveState,
     dispatch,
     save,
-    hint,
+    guideOpen,
+    guideAdvance,
+    guideLine,
+    guideApply,
     check,
     clearMessage: () => setMessage(""),
   };

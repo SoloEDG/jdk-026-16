@@ -49,7 +49,7 @@ export function JournalPanel({
             <button key={r.id} onClick={() => onOpen(r.puzzleId)}>
               <span>{puzzles.find((p) => p.id === r.puzzleId)?.title}</span>
               <small>
-                {formatTime(r.seconds)} · 提示 {r.hints} 次
+                {formatTime(r.seconds)} · 提示额度 {r.hints}
               </small>
               <ArrowRight size={15} />
             </button>

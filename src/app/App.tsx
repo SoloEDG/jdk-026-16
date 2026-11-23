@@ -92,8 +92,11 @@ export function App() {
                   puzzle={game.puzzle}
                   session={game.session}
                   message={game.message}
-                  onHint={game.hint}
                   onCheck={game.check}
+                  onGuideOpen={game.guideOpen}
+                  onGuideAdvance={game.guideAdvance}
+                  onGuideLine={game.guideLine}
+                  onGuideApply={game.guideApply}
                 />
               </div>
               <div className="bottom-row">

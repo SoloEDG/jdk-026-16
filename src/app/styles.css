@@ -637,6 +637,189 @@ main {
   margin: 9px 0 16px;
   text-align: center;
 }
+.guide {
+  margin-top: 23px;
+}
+.guide .hint-button {
+  margin-top: 0;
+}
+.guide-quota {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  color: #9aa7b9;
+  margin-bottom: 10px;
+}
+.guide-steps {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+.guide-steps button {
+  flex: 1;
+  font-size: 9px;
+  padding: 6px 2px;
+  border-radius: 6px;
+  color: #94a0b1;
+  background: #f2f5fa;
+}
+.guide-steps button.active {
+  background: #e3ecf8;
+  color: #5d7ba4;
+  font-weight: 600;
+}
+.guide-stage {
+  border: 1px solid #e8eef6;
+  background: #f8fafd;
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.guide-lead {
+  font-size: 10px;
+  color: #7c8ba0;
+}
+.guide-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-height: 148px;
+  overflow: auto;
+}
+.guide-lines button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #e3eaf3;
+  background: #fff;
+  border-radius: 7px;
+  padding: 7px 9px;
+  font-size: 10px;
+  color: #66788f;
+}
+.guide-lines button.active {
+  border-color: #b9cde8;
+  background: #eef4fc;
+  color: #546f96;
+}
+.guide-lines small {
+  color: #a3aebe;
+  font-size: 8px;
+}
+.guide-empty {
+  font-size: 9px;
+  line-height: 1.8;
+  color: #9aa6b8;
+}
+.guide-warn {
+  font-size: 9px;
+  line-height: 1.8;
+  color: #b08797;
+  background: #f9f1f4;
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+.guide-next,
+.guide-apply {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 10px;
+  padding: 9px;
+  border-radius: 7px;
+  background: #6683ac;
+  color: #fff;
+}
+.guide-reason-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: #66788f;
+}
+.guide-reason p {
+  font-size: 9px;
+  line-height: 1.9;
+  color: #8b98aa;
+  margin-top: 8px;
+}
+.guide-strip {
+  display: flex;
+  gap: 2px;
+  margin-top: 8px;
+}
+.guide-strip span {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: #e9edf4;
+  border: 1px solid #dde4ee;
+}
+.guide-strip span.f {
+  background: #6682aa;
+  border-color: #6682aa;
+}
+.guide-strip span.x {
+  background: #fff;
+}
+.guide-target {
+  background: #fff;
+  border: 1px solid #e3eaf3;
+  border-radius: 8px;
+  padding: 10px;
+}
+.guide-target strong {
+  font-size: 11px;
+  color: #546f96;
+  display: block;
+  margin-bottom: 6px;
+}
+.guide-target p {
+  font-size: 9px;
+  line-height: 1.9;
+  color: #8b98aa;
+}
+.guide-notes {
+  margin-top: 14px;
+  border-top: 1px dashed #e3e9f1;
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.guide-note {
+  background: #f8fafd;
+  border: 1px solid #e8eef6;
+  border-radius: 8px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.guide-note strong {
+  font-size: 9px;
+  color: #6d7f97;
+  font-weight: 600;
+}
+.guide-note small {
+  font-size: 8px;
+  color: #9aa6b8;
+  line-height: 1.7;
+}
+.guide-note em {
+  font-style: normal;
+  font-size: 8px;
+  color: #8fa8c7;
+}
+.guide-note.expired {
+  opacity: 0.72;
+}
+.guide-note.expired em {
+  color: #b08797;
+}
 .check-button {
   display: flex;
   align-items: center;
@@ -1078,8 +1261,7 @@ footer span:nth-child(2) {
   .helper > .muted {
     grid-column: 1;
   }
-  .helper > .hint-button,
-  .helper > .hint-note,
+  .helper > .guide,
   .helper > .check-button,
   .helper > .assist-message {
     grid-column: 1;

@@ -1,6 +1,56 @@
-import type { GameDocument, Mark, Puzzle } from "../../../shared/types";
+import type {
+  CertainCell,
+  GameDocument,
+  GuideCycle,
+  HintNote,
+  Mark,
+  Puzzle,
+} from "../../../shared/types";
 import { newDocument, newSession, isSolved } from "../../../shared/document";
+import { HINT_LIMIT, NOTE_LIMIT } from "../../assist/model/guide";
 const KEY = "gejian.document.v1";
+function cleanGuide(value: unknown, size: number): GuideCycle | null {
+  if (!value || typeof value !== "object") return null;
+  const guide = value as Partial<GuideCycle>;
+  const level = Number(guide.level);
+  const line = Number(guide.line);
+  if (
+    ![1, 2, 3].includes(level) ||
+    !Number.isInteger(line) ||
+    line < 0 ||
+    line >= size * 2
+  )
+    return null;
+  return { level: level as 1 | 2 | 3, line, stale: guide.stale === true };
+}
+function cleanNotes(value: unknown, size: number): HintNote[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter(
+      (note): note is HintNote =>
+        !!note &&
+        typeof note.id === "string" &&
+        typeof note.label === "string" &&
+        Number.isInteger(note.line) &&
+        note.line >= 0 &&
+        note.line < size * 2 &&
+        Array.isArray(note.clue) &&
+        note.clue.every((c: unknown) => Number.isFinite(c)) &&
+        typeof note.pattern === "string" &&
+        Number.isFinite(note.candidates) &&
+        Array.isArray(note.certain) &&
+        note.certain.every(
+          (c: CertainCell) =>
+            !!c &&
+            Number.isInteger(c.index) &&
+            c.index >= 0 &&
+            c.index < size ** 2 &&
+            (c.mark === "filled" || c.mark === "cross"),
+        ) &&
+        Number.isFinite(note.createdAt),
+    )
+    .slice(0, NOTE_LIMIT);
+}
 export function loadDocument(puzzles: Puzzle[]): {
   document: GameDocument;
   warning: string;
@@ -25,9 +75,12 @@ export function loadDocument(puzzles: Puzzle[]): {
         const session = {
           ...newSession(puzzle),
           marks: saved.marks,
-          hints: Math.min(3, Math.max(0, Number(saved.hints) || 0)),
+          // 旧存档的已用提示次数折算成已消耗额度，剩余额度不能重复领取
+          hints: Math.min(HINT_LIMIT, Math.max(0, Number(saved.hints) || 0)),
           checks: Math.max(0, Number(saved.checks) || 0),
           seconds: Math.max(0, Number(saved.seconds) || 0),
+          guide: cleanGuide(saved.guide, puzzle.size),
+          notes: cleanNotes(saved.notes, puzzle.size),
           updatedAt: Date.now(),
         };
         sessions[puzzle.id] = { ...session, solved: isSolved(puzzle, session) };

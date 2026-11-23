@@ -1,20 +1,26 @@
-import { Lightbulb, ScanLine, ArrowUpRight, Sparkles } from "lucide-react";
-import type { Puzzle, Session } from "../../../shared/types";
-import { HINT_LIMIT } from "../model/hints";
+import { ScanLine, ArrowUpRight, Sparkles } from "lucide-react";
+import type { Mark, Puzzle, Session } from "../../../shared/types";
 import { inspect } from "../lib/inspect";
 import { RuleGuide } from "./RuleGuide";
+import { GuidePanel } from "./GuidePanel";
 export function AssistPanel({
   puzzle,
   session,
   message,
-  onHint,
   onCheck,
+  onGuideOpen,
+  onGuideAdvance,
+  onGuideLine,
+  onGuideApply,
 }: {
   puzzle: Puzzle;
   session: Session;
   message: string;
-  onHint: () => void;
   onCheck: () => void;
+  onGuideOpen: () => void;
+  onGuideAdvance: () => void;
+  onGuideLine: (line: number) => void;
+  onGuideApply: (index: number, mark: Mark) => void;
 }) {
   const stats = inspect(puzzle, session);
   return (
@@ -22,19 +28,15 @@ export function AssistPanel({
       <section className="panel helper">
         <span className="eyebrow">A GENTLE NUDGE</span>
         <h2>换个思路看看</h2>
-        <p className="muted">卡住也没关系，给灵感一点空间。</p>
-        <button
-          className="hint-button"
-          onClick={onHint}
-          disabled={session.hints >= HINT_LIMIT || session.solved}
-        >
-          <Lightbulb size={18} />
-          <span>给我一点提示</span>
-          <span className="hint-count">
-            {HINT_LIMIT - session.hints} / {HINT_LIMIT}
-          </span>
-        </button>
-        <p className="hint-note">每次只揭示一格，不替你完成整幅图。</p>
+        <p className="muted">卡住也没关系，让引导陪你一步一步想。</p>
+        <GuidePanel
+          puzzle={puzzle}
+          session={session}
+          onOpen={onGuideOpen}
+          onAdvance={onGuideAdvance}
+          onSelectLine={onGuideLine}
+          onApply={onGuideApply}
+        />
         <button
           className="check-button"
           onClick={onCheck}
@@ -58,7 +60,7 @@ export function AssistPanel({
           </div>
           <div>
             <strong>{session.hints}</strong>
-            <span>已用提示</span>
+            <span>已用额度</span>
           </div>
         </div>
         <RuleGuide />

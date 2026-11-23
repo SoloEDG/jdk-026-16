@@ -8,6 +8,8 @@ export function newSession(puzzle: Puzzle): Session {
     checks: 0,
     seconds: 0,
     solved: false,
+    guide: null,
+    notes: [],
     updatedAt: Date.now(),
   };
 }
